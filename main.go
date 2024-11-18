@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"math/rand"
@@ -95,11 +96,18 @@ func checklive(url string) (islive bool, result map[string]string) {
 	}
 	result["ip"] = ip
 
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+
 	client := &http.Client{
 		Timeout: 7 * time.Second,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
+		Transport: tr,
 	}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -201,7 +209,7 @@ func main() {
 
 	flag.Parse()
 	if *filename == "" {
-		fmt.Println("usage: httpcheck -f target.txt -t 5")
+		fmt.Println("usage: httpcheck -f target.txt -t 50")
 		return
 	}
 	targets := readtarget(*filename)
