@@ -213,12 +213,7 @@ func main() {
 		return
 	}
 	targets := readtarget(*filename)
-	if *thread != 10 {
-		syncrun(targets, *thread)
-
-	} else {
-		syncrun(targets, 10)
-	}
+	syncrun(targets, *thread)
 	fmt.Println("all task done, the live target saved to result.txt")
 
 }
